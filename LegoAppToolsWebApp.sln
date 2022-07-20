@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31019.35
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LegoAppToolsLib", ".\LegoAppToolsLib\LegoAppToolsLib.csproj", "{C4C03CD3-7D0F-406B-92D1-99AA7B7E6411}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CLIApp", ".\CLIApp\CLIApp.csproj", "{85A024EF-4278-4B38-A53D-1965EB2FBB9B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LegoAppToolsWebApp", ".\LegoAppToolsWebApp\LegoAppToolsWebApp.csproj", "{8694C4EE-B553-4A3D-97B7-4B948BA61359}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C4C03CD3-7D0F-406B-92D1-99AA7B7E6411}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4C03CD3-7D0F-406B-92D1-99AA7B7E6411}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4C03CD3-7D0F-406B-92D1-99AA7B7E6411}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4C03CD3-7D0F-406B-92D1-99AA7B7E6411}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85A024EF-4278-4B38-A53D-1965EB2FBB9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85A024EF-4278-4B38-A53D-1965EB2FBB9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85A024EF-4278-4B38-A53D-1965EB2FBB9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85A024EF-4278-4B38-A53D-1965EB2FBB9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8694C4EE-B553-4A3D-97B7-4B948BA61359}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8694C4EE-B553-4A3D-97B7-4B948BA61359}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8694C4EE-B553-4A3D-97B7-4B948BA61359}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8694C4EE-B553-4A3D-97B7-4B948BA61359}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4E509DD3-3552-418A-948C-23E4C1A5D37C}
+	EndGlobalSection
+EndGlobal

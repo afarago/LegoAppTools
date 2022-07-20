@@ -1,0 +1,119 @@
+﻿@page
+@model LegoAppToolsBackend.Pages.IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<h3>
+    LEGO App Tools
+    <small class="text-muted">
+        various tools to help your life with LEGO apps
+    </small>
+</h3>
+<div>
+    LEGO SPIKE LEGO Mindstorms Robot Inventor, EV3 Classroom
+</div>
+
+<style>
+    .tab-pane{
+        min-height: 32vh;
+    }
+</style>
+
+<form asp-controller="ProcessFile" asp-action="ProcessFile" method="post" enctype="multipart/form-data">
+
+    <div id="maincontainer">
+        <input type="file" name="file" accept=".llsp,.lms,.lmsp" id="file" class="filestyle"
+               data-text="Choose a file"
+               data-input="true" data-buttonbefore="true" data-dragdrop="true"
+               data-badge="false" data-placeholder="Select a file (.llsp, .lms, .lmsp) to upload" />
+        <br />
+
+        <div id="tab_dummy" class="h-75 p-3 border active">
+            <div class="d-flex justify-content-center">
+                <div class="text-center">
+                    <i class="bi bi-cloud-arrow-up-fill" style="font-size: 6rem; color: cornflowerblue;"></i><br />
+                    Upload or drop a file
+                </div>
+            </div>
+        </div>
+
+        <div id="tabs_main" class="container py-2 h-100 d-none" style="min-height:30vh;">
+            <ul class="nav nav-tabs border-0" role="tablist">
+                <li class="nav-item p-2">
+                    <svg width="20" height="20">
+                        <use id="svg_program_use" href="./img/Cat0.svg#dsmIcon" xlink:href="./img/Cat0.svg#dsmIcon"></use>
+                    </svg>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#tab_code" id="code" data-bs-toggle="tab">Code</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#tab_svg" id="svg" data-bs-toggle="tab">Preview</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#tab_stats" id="stats" data-bs-toggle="tab">
+                        Stats
+                        <i id="stats_icon_warning" class="bi bi-exclamation-triangle-fill d-none" style="color:yellow"></i>
+                        <i id="stats_icon_error" class="bi bi-exclamation-triangle-fill d-none" style="color:red"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#tab_repair" id="repair" data-bs-toggle="tab">Repair <i class="bi bi-exclamation-triangle-fill"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#tab_screenshot" id="screenshot" data-bs-toggle="tab">Screenshot</a>
+                </li>
+                <li class="nav-item mx-auto">
+                </li>
+                <li class="nav-item justify-content-end">
+                    <button type="submit" id="submitBtn" class="btn btn-primary d-none">Submit File</button>
+                </li>
+            </ul>
+
+            <div class="tab-content h-75">
+                <div id="tab_repair" class="tab-pane h-100 p-3 border disabled _cansubmit">
+                    <h3>Repair a corrupt LEGO Classroom / SPIKE / Robot Inventor App file</h3>
+                    <div class="text-muted">
+                        Sometimes the new LEGO apps mix up files and they cannot be opened anymore. I have created this app to fix files until LEGO service releases a fix for this.
+                        Read more about the problem and the solution <a href="https://digitalbrick.home.blog/2022/06/02/bugfixing-a-frozen-lego-spike-prime-llsp-file/">here</a>.
+                    </div>
+                    <hr />
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="selectedpart" value="first" id="first" checked />
+                        <label class="form-check-label" for="first">Restore <u>first</u> part</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="selectedpart" value="second" id="second" />
+                        <label class="form-check-label" for="second">Restore <u>second</u> part</label>
+                    </div>
+                </div>
+                <div id="tab_screenshot" class="tab-pane h-100 p-3 border _cansubmit">
+                    <h3>Download a program screenshot as PNG</h3>
+                    <div>Download a PNG picture with transparent background of the code</div>
+                </div>
+                <div id="tab_svg" class="tab-pane h-100 p-3 border">
+                    <div id="preview_svg"></div>
+                </div>
+                <div id="tab_stats" class="tab-pane h-100 p-3 border">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Stat</th>
+                                <th scope="col">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="preview_stats">
+                        </tbody>
+                    </table>
+                </div>
+                <div id="tab_code" class="tab-pane h-100 p-3 border active">
+                    <pre id="preview_code" style="font-family: 'Courier New', monospace;}"></pre>
+                </div>
+            </div>
+        </div>
+
+        <input id="selectedtab" type="hidden" name="selectedtab" value="" />
+    </div>
+
+</form>
