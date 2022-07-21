@@ -109,7 +109,7 @@ namespace LegoAppToolsLib
             using ZipFile zip1 = _GetLegoFile(stream, out JObject manifest, out string program_type);
 
             if (program_type == "word-blocks" || program_type == "icon-blocks")
-                return Scratch3FilePrinter.GetProgramContents(zip1).ToList();
+                return Scratch3FilePrinter.GetProgramContents(zip1, program_type== "word-blocks").ToList();
             else if (program_type == "python")
                 return PythonFilePrinter.GetProgramContents(zip1).ToList();
             else
