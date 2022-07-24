@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "CLIApp": {
+      "commandName": "Project"
+    }
+  }
+}

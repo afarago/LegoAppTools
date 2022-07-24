@@ -264,6 +264,9 @@ namespace LegoAppToolsLib
             string block_name = opcode.ToString();
             bool isownerblock = false;
 
+            if (opcode == "control_if_else") //!!
+                isownerblock = false;
+
             //-- get comment - for non embedded blocks only
             if (node.TryGetValue(SB3PROP_COMMENT, out JToken prop_comment))
             {
@@ -317,7 +320,13 @@ namespace LegoAppToolsLib
             var input_values = new Dictionary<string, InputValue>();
             if (node.TryGetValue("inputs", out JToken prop_inputs))
             {
-                foreach (var input in prop_inputs.Value<JObject>())
+                //-- reorder SUBSTACK/SUBSTACK2 as it can arbitraty based on how user placed it
+                //TODO: temp hack, to be refactored with a better idea
+                var inputs = prop_inputs.Value<JObject>()
+                    .Cast<KeyValuePair<string, JToken>>()
+                    .OrderBy(item=>item.Key);
+
+                foreach (KeyValuePair<string, JToken> input in inputs)
                 {
                     JArray values = input.Value as JArray;
                     if (values == null || values.Count < 2) continue;
@@ -325,7 +334,7 @@ namespace LegoAppToolsLib
 
                     //-- check out substacks
                     string input_name = input.Key;
-                    if (input_name == SB3_SUBSTACK || input_name == SB3_SUBSTACK2) // type==2
+                    if (input_name.StartsWith(SB3_SUBSTACK)) // SB3_SUBSTACK, SB3_SUBSTACK2 type==2
                     {
                         string noderefid = values[1].Value<string>();
                         JProperty refnode = blockroot.Property(noderefid);
