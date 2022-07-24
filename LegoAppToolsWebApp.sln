@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31019.35
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LegoAppToolsLib", ".\LegoAppToolsLib\LegoAppToolsLib.csproj", "{C4C03CD3-7D0F-406B-92D1-99AA7B7E6411}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LegoAppToolsLib", "LegoAppToolsLib\LegoAppToolsLib.csproj", "{C4C03CD3-7D0F-406B-92D1-99AA7B7E6411}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CLIApp", ".\CLIApp\CLIApp.csproj", "{85A024EF-4278-4B38-A53D-1965EB2FBB9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CLIApp", "CLIApp\CLIApp.csproj", "{85A024EF-4278-4B38-A53D-1965EB2FBB9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LegoAppToolsWebApp", ".\LegoAppToolsWebApp\LegoAppToolsWebApp.csproj", "{8694C4EE-B553-4A3D-97B7-4B948BA61359}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LegoAppToolsWebApp", "LegoAppToolsWebApp\LegoAppToolsWebApp.csproj", "{8694C4EE-B553-4A3D-97B7-4B948BA61359}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

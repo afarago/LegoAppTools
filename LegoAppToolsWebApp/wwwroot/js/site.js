@@ -4,7 +4,8 @@
 $(":file").filestyle({
     'onChange': function (files) {
         updateSVGPreview();
-    }
+    },
+    'placeholder': 'Select a file (.llsp, .lms, .lmsp) to upload'
 });
 
 function setSelectedTabByTabTarget(target) {

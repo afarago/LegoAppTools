@@ -8,14 +8,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @Html.Partial("_Favicons")
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">
-                    <svg width="1em" height="1em">
-                        <use href="./img/BrickSmall.svg#dsmIcon" xlink:href="./img/BrickSmall.svg#dsmIcon"></use>
+                <a class="navbar-brand" asp-area="" asp-page="/Index" style="font-size: 200%; padding-bottom: 0px;">
+                    <svg height="1.5em" width="4em" style="position:relative; top:-5px">
+                        <use href="./img/logo_full.svg#icon" xlink:href="./img/logo_full.svg#icon"></use>
                     </svg>
                     LEGO App Tools
                 </a>
@@ -49,9 +50,10 @@
     </footer>
 
     <script src="~/lib/bootstrap/dist/bootstrap.bundle.js"></script>
-    <script src="~/lib/bootstrap-filestyle/bootstrap-filestyle.min.js"></script>
+    <script src="~/lib/bootstrap-filestyle/bootstrap-filestyle.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
