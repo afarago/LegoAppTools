@@ -1,11 +1,16 @@
 ﻿using LegoAppToolsLib;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
 namespace CLIApp
 {
+    using LegoAppStatsList = Dictionary<string, string>;
+    using LegoAppErrorList = List<string>;
+    using LegoAppCodeListing = List<string>;
+
     class Program
     {
         static void Main(string[] args)
@@ -34,14 +39,9 @@ namespace CLIApp
                     //var result = LegoAppToolsLib.LegoAppTools.GeneratePngCanvas(stream, file);
 
                     stream.Position = 0;
-                    var result_prg = LegoAppToolsLib.LegoAppTools.GetFileListing(stream);
-                    Console.WriteLine(
-                        string.Join("\r\n", result_prg.ToArray()));
-
-                    stream.Position = 0;
-                    var result_stats = LegoAppToolsLib.LegoAppTools.GetFileStats(stream);
-                    Console.WriteLine(
-                        string.Join("\r\n", result_stats.Select(kvp => $"{kvp.Key} = {kvp.Value}").ToArray()));
+                    (LegoAppCodeListing code, LegoAppStatsList stats) = LegoAppTools.GetFileContents(stream);
+                    Console.WriteLine(string.Join("\r\n", code.ToArray()));
+                    Console.WriteLine(string.Join("\r\n", stats.Select(kvp => $"{kvp.Key} = {kvp.Value}").ToArray()));
 
                     //string filename_out = Path.Combine(Path.GetDirectoryName(file), result.name);
                     //using (var stream_out_fs = File.Create(filename_out))

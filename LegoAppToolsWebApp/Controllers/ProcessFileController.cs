@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -13,6 +14,10 @@ using System.Text;
 
 namespace LegoAppToolsWebApp.Controllers
 {
+    using LegoAppStatsList = Dictionary<string, string>;
+    using LegoAppErrorList = List<string>;
+    using LegoAppCodeListing = List<string>;
+
     /// <summary>
     /// Simple service to fix corrupt SPIKE/Robot Inventor/EV3 Classroom files
     /// </summary>
@@ -44,27 +49,10 @@ namespace LegoAppToolsWebApp.Controllers
                     return RepairFile(file, selectedpart);
                 case "screenshot":
                     return ScreenshotFile(file);
-                case "svg":
-                    return SvgFile(file);
                 case "preview":
                     return Preview(file);
             }
             return BadRequest();
-        }
-
-        public IActionResult SvgFile([FromForm] IFormFile file)
-        {
-            //-- repair the file
-            try
-            {
-                var result = LegoAppTools.GenerateSvgCanvas(file.OpenReadStream());
-
-                return File(result, "image/svg+xml");
-            }
-            catch (LegoAppToolException ex)
-            {
-                return ValidationProblem(ex.Message);
-            }
         }
 
         public IActionResult Preview([FromForm] IFormFile file)
@@ -74,13 +62,12 @@ namespace LegoAppToolsWebApp.Controllers
             {
                 JObject result = new JObject();
 
-                var stats = LegoAppTools.GetFileStats(file.OpenReadStream());
-                result.Add("stats", JObject.FromObject(stats));
+                (LegoAppCodeListing code, LegoAppStatsList stats) = LegoAppTools.GetFileContents(file.OpenReadStream());
 
-                var code = LegoAppTools.GetFileListing(file.OpenReadStream());
+                result.Add("stats", JObject.FromObject(stats));
                 result.Add("code", string.Join("\r\n", code.ToArray()));
 
-                using Stream svgstream = LegoAppTools.GenerateSvgCanvas(file.OpenReadStream());
+                using Stream svgstream = LegoAppTools.GetSVGStreamFromLegoFileStream(file.OpenReadStream());
                 using StreamReader sr = new StreamReader(svgstream);
                 string svg = sr.ReadToEnd();
                 result.Add("svg", svg);

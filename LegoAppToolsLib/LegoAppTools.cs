@@ -13,6 +13,10 @@ using System.Text;
 
 namespace LegoAppToolsLib
 {
+    using LegoAppStatsList = Dictionary<string, string>;
+    using LegoAppErrorList = List<string>;
+    using LegoAppCodeListing = List<string>;
+
     public readonly struct StreamOutStruct
     {
         public StreamOutStruct(string name_, Stream stream_)
@@ -29,7 +33,13 @@ namespace LegoAppToolsLib
         private const string FN_MANIFEST = "manifest.json";
         private const string FN_ICONSVG = "icon.svg";
 
-        static private Stream GetSVGStreamFromLegoFileStream(Stream stream)
+        /// <summary>
+        /// Retrieve the stream of the SVG entry from a LEGO file
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        /// <exception cref="LegoAppToolException"></exception>
+        static public Stream GetSVGStreamFromLegoFileStream(Stream stream)
         {
             MemoryStream stream_out = new MemoryStream(); //-- do not dispose, as it needs to be returned
 
@@ -40,10 +50,16 @@ namespace LegoAppToolsLib
 
             using Stream stream1 = zip1.GetInputStream(ze1);
             stream1.CopyTo(stream_out);
+            stream_out.Position = 0;
 
             return stream_out;
         }
 
+        /// <summary>
+        /// Get SVGDoc from a LEGO file strea,
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
         static private SvgDocument GetSVGDocFromLegoFileStream(Stream stream)
         {
             using var stream1 = GetSVGStreamFromLegoFileStream(stream);
@@ -52,13 +68,13 @@ namespace LegoAppToolsLib
             return svgDocument;
         }
 
-        static public Stream GenerateSvgCanvas(Stream stream)
-        {
-            Stream stream_out = GetSVGStreamFromLegoFileStream(stream); //-- do not dispose, as it needs to be returned
-            stream_out.Position = 0;
-            return stream_out;
-        }
-
+        /// <summary>
+        /// Generate a PNG file from a LEGO file
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        /// <exception cref="LegoAppToolException"></exception>
         static public StreamOutStruct GeneratePngCanvas(Stream stream, string filename)
         {
             MemoryStream stream_out = new MemoryStream(); //-- do not dispose, as it needs to be returned
@@ -104,40 +120,65 @@ namespace LegoAppToolsLib
             throw new LegoAppToolException("#BADFILE Invalid file.");
         }
 
-        static public List<String> GetFileListing(Stream stream)
+        /// <summary>
+        /// Get LEGO file contents
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        /// <exception cref="LegoAppToolException"></exception>
+        static public (LegoAppCodeListing code, LegoAppStatsList stats) GetFileContents(Stream stream)
         {
             using ZipFile zip1 = _GetLegoFile(stream, out JObject manifest, out string program_type);
+            LegoAppCodeListing code;
+            LegoAppStatsList stats;
+            LegoAppErrorList errors;
 
             if (program_type == "word-blocks" || program_type == "icon-blocks")
-                return Scratch3FilePrinter.GetProgramContents(zip1, program_type== "word-blocks").ToList();
+            {
+                (code, stats, errors) = Scratch3FilePrinter.GetProgram(zip1, program_type == "word-blocks", manifest);
+            }
             else if (program_type == "python")
-                return PythonFilePrinter.GetProgramContents(zip1).ToList();
+            {
+                (stats, errors) = Generic_GetFileStats(zip1, manifest);
+                code = PythonFilePrinter.GetProgramContents(zip1);
+            }
             else
+            {
                 throw new LegoAppToolException("#ERRTYPE Invalid file.");
+            }
+
+            //-- add errors to stats
+            if (errors.Count > 0) stats["errors"] = string.Join("\r\n", errors.ToArray());
+
+            //-- insert header to the top
+            try
+            {
+                var header = new List<string>();
+                header.Add(String.Empty);
+                header.Add($"\"\"\""+$"Program '{stats["name"]}'");
+                if (stats.ContainsKey("type")) header.Add($"   program type '{stats["type"]}'");
+                if (stats.ContainsKey("slot")) header.Add($"   in slot {stats["slot"]}");
+                if (stats.ContainsKey("hub")) header.Add($"   running on {stats["hub"]} hub");
+                header.Add($"\"\"\"");
+                header.Add(String.Empty);
+                code.InsertRange(0, header);
+            }
+            catch { }
+
+            return (code, stats);
         }
 
-        static public Dictionary<String, String> GetFileStats(Stream stream)
+        /// <summary>
+        /// Generic Stats generator of a LEGO file
+        /// </summary>
+        /// <param name="zip1"></param>
+        /// <param name="manifest"></param>
+        /// <returns></returns>
+        static internal (LegoAppStatsList retval, LegoAppErrorList errors) Generic_GetFileStats(ZipFile zip1, JObject manifest)
         {
-            using ZipFile zip1 = _GetLegoFile(stream, out JObject manifest, out string program_type);
-            Dictionary<String, String> retval;
-            List<String> errors;
+            LegoAppErrorList errors = new LegoAppErrorList();
 
-            if (program_type == "word-blocks" || program_type == "icon-blocks")
-                (retval, errors) = Scratch3FilePrinter.GetFileStats(zip1, manifest);
-            else if (program_type == "python")
-                (retval, errors) = Generic_GetFileStats(zip1, manifest);
-            else
-                throw new LegoAppToolException("#ERRTYPE Invalid file.");
-
-            if (errors.Count > 0) retval["errors"] = string.Join("\r\n", errors.ToArray());
-            return retval;
-        }
-
-        static internal (Dictionary<String, String> stats, List<string> errors) Generic_GetFileStats(ZipFile zip1, JObject manifest)
-        {
-            List<string> errors = new List<string>();
-
-            var retval = new Dictionary<String, String>();
+            var retval = new LegoAppStatsList();
             retval["name"] = manifest.GetValue("name").ToString();
             retval["slot"] = manifest.GetValue("slotIndex").ToString();
             var hw0 = (manifest.GetValue("hardware").FirstOrDefault() as JProperty).Value as JObject;
@@ -158,13 +199,19 @@ namespace LegoAppToolsLib
         }
 
 
+        /// <summary>
+        /// Repair a damaged LEGO file
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="filename"></param>
+        /// <param name="selectedpart_is_first"></param>
+        /// <returns></returns>
         static public StreamOutStruct RepairFile(Stream stream, string filename, bool selectedpart_is_first)
         {
             using ZipFile zip1 = _GetLegoFile(stream, out JObject manifest, out _);
 
             return Scratch3FileUtils.RepairFile(zip1, filename, selectedpart_is_first);
         }
-
 
         /// <summary>
         /// Open a LegoFile

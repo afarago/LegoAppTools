@@ -1,13 +1,6 @@
 ﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 // for details on configuring this project to bundle and minify static web assets.
 
-$(":file").filestyle({
-    'onChange': function (files) {
-        updateSVGPreview();
-    },
-    'placeholder': 'Select a file (.llsp, .lms, .lmsp) to upload'
-});
-
 function setSelectedTabByTabTarget(target) {
     const tid = target.id;
     //-- update hidden form field function selector for server processing
@@ -23,11 +16,24 @@ $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (event) {
     //-- on tab activation update hidden form field for server processing
     setSelectedTabByTabTarget(event.target);
 })
+
 $(function () {
     //-- activate active tab
     //const target = $('a[data-bs-toggle="tab"].active')[0];
     //setSelectedTabByTabTarget(target);
+
+    //-- set and wire elements
+    $("#file:file").filestyle({
+        'onChange': function (files) {
+            updateSVGPreview();
+        },
+        'placeholder': 'Select a file (.llsp, .lms, .lmsp) to upload'
+    });
 })
+
+function spinnerShow(show) {
+    $('#spinner').toggleClass('d-none', { 'duration': 1000, display: show });
+}
 
 function updateSVGPreview() {
     const $form = $("form");
@@ -37,6 +43,7 @@ function updateSVGPreview() {
     //-- overrde selected tab for posing ajax preview mode
     data1.set('selectedtab', 'preview');
 
+    spinnerShow(true);
     let ajaxRequest = $.getJSON({
         type: "POST",
         url: $form.attr("action"),
@@ -69,6 +76,9 @@ function updateSVGPreview() {
             const slotid = (response.stats?.slot);
             const sloturl = '/img/Cat' + slotid + '.svg#dsmIcon';
             $('#svg_program_use').attr('href', sloturl).attr('xlink:href', sloturl);
+        },
+        complete: function () {
+            spinnerShow(false);
         }
     });
 }

@@ -1,6 +1,6 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "LEGO App Tools",
+    "short_name": "LegoAppTools",
     "icons": [
         {
             "src": "/favicon/android-chrome-192x192.png",

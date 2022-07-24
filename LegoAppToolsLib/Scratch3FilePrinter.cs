@@ -11,15 +11,47 @@ using ICSharpCode.SharpZipLib.Zip;
 
 namespace LegoAppToolsLib
 {
+    using LegoAppStatsList = Dictionary<string, string>;
+    using LegoAppErrorList = List<string>;
+    using LegoAppCodeListing = List<string>;
+
     internal partial class Scratch3FilePrinter
     {
-        static public (Dictionary<String, String> stats, List<string> errors) GetFileStats(ZipFile zip1, JObject manifest)
+        /// <summary>
+        /// Retrieve LEGO file code and stats
+        /// </summary>
+        /// <param name="zip1"></param>
+        /// <param name="is_wordblocks"></param>
+        /// <param name="manifest"></param>
+        /// <returns></returns>
+        static public (LegoAppCodeListing code, LegoAppStatsList stats, LegoAppErrorList errors) GetProgram(ZipFile zip1, bool is_wordblocks, JObject manifest)
         {
-            (Dictionary<String, String> retval, List<string> errors) = LegoAppTools.Generic_GetFileStats(zip1, manifest);
-
             var disposables = Scratch3FileUtils._GetLegoFileProjectJSON(zip1, out JObject project, out JArray project_targets);
             using MemoryStream stream2 = disposables.stream2;
             using ZipFile zip2 = disposables.zip2;
+
+            //-- get statistics
+            (LegoAppStatsList stats, LegoAppErrorList errors) = _GetFileStats(zip1, manifest, project, project_targets);
+
+            //-- get listings
+            LegoAppCodeListing code_listing = (LegoAppCodeListing)(_GetProgramContents(zip1, project, project_targets, is_wordblocks).ToList());
+
+            return (code_listing, stats, errors);
+        }
+
+        /// <summary>
+        /// Retrieve LEGO file app stats
+        /// </summary>
+        /// <param name="zip1"></param>
+        /// <param name="manifest"></param>
+        /// <param name="project"></param>
+        /// <param name="project_targets"></param>
+        /// <returns></returns>
+        static public (LegoAppStatsList stats, LegoAppErrorList errors) _GetFileStats(ZipFile zip1,
+            JObject manifest,
+            JObject project, JArray project_targets)
+        {
+            (LegoAppStatsList retval, LegoAppErrorList errors) = LegoAppTools.Generic_GetFileStats(zip1, manifest);
 
             if (project_targets.Count != 2)
                 errors.Add($"#ERRTRG1 Invalid LEGO content file, mismatching project target count ({project_targets.Count})");
@@ -102,18 +134,14 @@ namespace LegoAppToolsLib
             return (retval, errors);
         }
 
-
         /// <summary>
         /// Get Program contents
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        static public IEnumerable<string> GetProgramContents(ZipFile zip1, bool is_wordblocks)
+        static private IEnumerable<string> _GetProgramContents(ZipFile zip1, JObject project, JArray project_targets,
+            bool is_wordblocks, bool addheader = true)
         {
-            var disposables = Scratch3FileUtils._GetLegoFileProjectJSON(zip1, out JObject project, out JArray project_targets);
-            using MemoryStream stream2 = disposables.stream2;
-            using ZipFile zip2 = disposables.zip2;
-
             var target_prg = project_targets[1] as JObject; //non-stage
             var blocks_root = target_prg["blocks"].Value<JObject>();
             var comments_root = target_prg["comments"].Value<JObject>();
@@ -265,9 +293,6 @@ namespace LegoAppToolsLib
             string block_name = opcode.ToString();
             bool isownerblock = false;
 
-            if (opcode == "control_if_else") //!!
-                isownerblock = false;
-
             //-- get comment - for non embedded blocks only
             if (node.TryGetValue(SB3PROP_COMMENT, out JToken prop_comment))
             {
@@ -325,7 +350,7 @@ namespace LegoAppToolsLib
                 //TODO: temp hack, to be refactored with a better idea
                 var inputs = prop_inputs.Value<JObject>()
                     .Cast<KeyValuePair<string, JToken>>()
-                    .OrderBy(item=>item.Key);
+                    .OrderBy(item => item.Key);
 
                 foreach (KeyValuePair<string, JToken> input in inputs)
                 {

@@ -9,11 +9,15 @@ using System.Text;
 
 namespace LegoAppToolsLib
 {
+    using LegoAppStatsList = Dictionary<string, string>;
+    using LegoAppErrorList = List<string>;
+    using LegoAppCodeListing = List<string>;
+
     internal class PythonFilePrinter
     {
         private const string FN_PROJECTBODY = "projectbody.json";
 
-        static public IEnumerable<string> GetProgramContents(ZipFile zip1)
+        static public LegoAppCodeListing GetProgramContents(ZipFile zip1)
         {
             //projectbody.json
             ZipEntry ze1_projectbody = zip1.GetEntry(FN_PROJECTBODY);
@@ -30,7 +34,7 @@ namespace LegoAppToolsLib
                     throw new LegoAppToolException("#MISPYMAIN Invalid LEGO content file");
                 string contents = jt.ToString();
 
-                return contents.Split("\n");
+                return (LegoAppCodeListing)contents.Split("\n").ToList();
             }
         }
 
