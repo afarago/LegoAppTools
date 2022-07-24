@@ -27,7 +27,7 @@ $(function () {
         'onChange': function (files) {
             updateSVGPreview();
         },
-        'placeholder': 'Select a file (.llsp, .lms, .lmsp) to upload'
+        'placeholder': 'Select a LEGO SPIKE, Robot Inventor or EV3 Classroom file (.llsp, .lms, .lmsp) to upload'
     });
 })
 

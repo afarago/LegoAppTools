@@ -11,27 +11,15 @@
     </small>
 </h3>
 
-<style>
-    .tab-pane {
-        min-height: 32vh;
-    }
-    #maincontainer.drop-active {
-        border: #ccc 2px dashed !important;
-    }
-</style>
-
 <form asp-controller="ProcessFile" asp-action="ProcessFile" method="post" enctype="multipart/form-data">
 
-    <div id="maincontainer" class="container pb-3">
-        <div>
-            LEGO SPIKE LEGO Mindstorms Robot Inventor, EV3 Classroom
-        </div>
+    <div id="maincontainer" class="container py-3">
 
         <div class="flex-fill pb-3">
             <input type="file" name="file" accept=".llsp,.lms,.lmsp" id="file" class="filestyle"
                    data-text="Choose a file"
                    data-input="true" data-buttonbefore="true" data-dragdrop="true"
-                   data-badge="false" data-placeholder="Select a file (.llsp, .lms, .lmsp) to upload" />
+                   data-badge="false" data-placeholder="Select a LEGO SPIKE, Robot Inventor or EV3 Classroom file (.llsp, .lms, .lmsp) to upload" />
         </div>
 
         <div class="p-3 d-none" style="position:absolute;" id="spinner">
@@ -44,7 +32,7 @@
             <div class="d-flex justify-content-center">
                 <div class="text-center">
                     <i class="bi bi-cloud-arrow-up-fill" style="font-size: 6rem; color: cornflowerblue; line-height: 1em"></i><br />
-                    Upload or drop a file
+                    Drop a LEGO SPIKE, Robot Inventor or EV3 Classroom file
                 </div>
             </div>
         </div>
