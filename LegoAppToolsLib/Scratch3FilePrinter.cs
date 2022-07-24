@@ -226,6 +226,7 @@ namespace LegoAppToolsLib
                                 opcode.Equals("event_whenkeypressed") ||
                                 opcode.StartsWith("flipperevents_") ||
                                 opcode.StartsWith("horizontalevents_") ||
+                                opcode.StartsWith("ev3events_") ||
                                 opcode.StartsWith("flipperxboxgamepad_dpadWhen") ||
                                 Regex.IsMatch(opcode, @"flipper\w+_\w+When") ||
                                 opcode == OPCODE_PROCDEF;

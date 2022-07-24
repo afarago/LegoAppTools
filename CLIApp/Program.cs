@@ -22,7 +22,8 @@ namespace CLIApp
             //@"e:\FirstLegoLeague\z_Fixing\TertschAgi\DO_NOT_TOUCH_MaGaBen.llsp";
             //@"c:\Users\attil\Documents\LEGO Education SPIKE\iconblocks_test2.llsp";
             //@"c:\Users\attil\Documents\LEGO Education SPIKE\essential_testicon.llsp";
-            @"e:\FirstLegoLeague\2022_WRO_Jovobelatok\programs\WRO22_Luna_2.lms";
+            //@"e:\FirstLegoLeague\2022_WRO_Jovobelatok\programs\WRO22_Luna_2.lms";
+            @"e:\FirstLegoLeague\z_Fixing\Ravi\BLACK-1a-1.lmsp";
             using (Stream stream = File.OpenRead(file))
             {
                 try
