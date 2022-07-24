@@ -440,8 +440,8 @@ namespace LegoAppToolsLib
                                 string refname = reference_field0.Name;
                                 string reference_field00_val = reference_field0.Value.FirstOrDefault().Value<string>();
                                 //var x = 1;
-                                if (TRANSLATORS.ContainsKey(refopcode))
-                                    if (TRANSLATORS[refopcode]?.TryGetValue(reference_field00_val, out string ref_translated_value) == true)
+                                if (TRANSLATORS.ContainsKey(refopcode) && TRANSLATORS[refopcode] != null)
+                                    if (TRANSLATORS[refopcode].TryGetValue(reference_field00_val, out string ref_translated_value))
                                         reference_field00_val = ref_translated_value;
 #if PRINT_UNKNOWN_TRANSLATIONS
                                     else
