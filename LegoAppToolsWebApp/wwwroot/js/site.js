@@ -22,12 +22,8 @@ $(function () {
     //const target = $('a[data-bs-toggle="tab"].active')[0];
     //setSelectedTabByTabTarget(target);
 
-    //-- set and wire elements
-    $("#file:file").filestyle({
-        'onChange': function (files) {
-            updateSVGPreview();
-        },
-        'placeholder': 'Select a LEGO SPIKE, Robot Inventor or EV3 Classroom file (.llsp, .lms, .lmsp) to upload'
+    $("#file:file").on('change', function (files) {
+        updateSVGPreview();
     });
 })
 
@@ -110,7 +106,6 @@ function OnDrop(e) {
     if (!selectedFiles || !selectedFiles.length) return; //-- prevent drop trigger on empty files
 
     $("#file").get(0).files = selectedFiles;
-    $("#file").filestyle('placeholder', Array.from($("#file").get(0).files).map(x => x.name).join(','));
     updateSVGPreview();
 }
 
