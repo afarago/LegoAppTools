@@ -155,7 +155,7 @@ namespace LegoAppToolsLib
             {
                 var header = new List<string>();
                 header.Add(String.Empty);
-                header.Add($"\"\"\""+$"Program '{stats["name"]}'");
+                header.Add($"\"\"\"" + $"Program '{stats["name"]}'");
                 if (stats.ContainsKey("type")) header.Add($"   program type '{stats["type"]}'");
                 if (stats.ContainsKey("slot")) header.Add($"   in slot {stats["slot"]}");
                 if (stats.ContainsKey("hub")) header.Add($"   running on {stats["hub"]} hub");
@@ -179,21 +179,25 @@ namespace LegoAppToolsLib
             LegoAppErrorList errors = new LegoAppErrorList();
 
             var retval = new LegoAppStatsList();
-            retval["name"] = manifest.GetValue("name").ToString();
-            retval["slot"] = manifest.GetValue("slotIndex").ToString();
-            var hw0 = (manifest.GetValue("hardware").FirstOrDefault() as JProperty).Value as JObject;
-            if (hw0 != null)
+            try
             {
-                JToken name;
-                if (!hw0.TryGetValue("name", out name)) hw0.TryGetValue("advertisedName", out name);
-                if (name != null) retval["hub"] = name.ToString();
+                retval["name"] = manifest.GetValue("name")?.ToString();
+                retval["slot"] = manifest.GetValue("slotIndex")?.ToString();
+                var hw0 = (manifest.GetValue("hardware")?.FirstOrDefault() as JProperty)?.Value as JObject;
+                if (hw0 != null)
+                {
+                    JToken name;
+                    if (!hw0.TryGetValue("name", out name)) hw0.TryGetValue("advertisedName", out name);
+                    if (name != null) retval["hub"] = name.ToString();
 
-                JToken connection = hw0.GetValue("connection");
-                if (connection != null) retval["connection"] = connection.ToString();
+                    JToken connection = hw0.GetValue("connection");
+                    if (connection != null) retval["connection"] = connection.ToString();
+                }
+                retval["type"] = manifest.GetValue("type")?.ToString();
+                retval["created"] = manifest.GetValue("created")?.ToString();
+                retval["last saved"] = manifest.GetValue("lastsaved")?.ToString();
             }
-            retval["type"] = manifest.GetValue("type").ToString();
-            retval["created"] = manifest.GetValue("created").ToString();
-            retval["last saved"] = manifest.GetValue("lastsaved").ToString();
+            catch { }
 
             return (retval, errors);
         }
