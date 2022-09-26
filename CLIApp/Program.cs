@@ -15,30 +15,21 @@ namespace CLIApp
     {
         static void Main(string[] args)
         {
-            //string file = @"e:\FirstLegoLeague\z_Fixing\Eva\take1\program.llsp";
-            //string file = @"c:\Users\attil\Documents\LEGO MINDSTORMS\WRO22_Harry_1.lms";
-
-            string file =
-            //@"C:\Users\attil\Documents\LEGO MINDSTORMS\NLF_test2.lms";
-            //@"c:\Users\attil\Documents\LEGO Education SPIKE\python test1.llsp";
-            //@"C:\Users\attil\Documents\LEGO Education SPIKE\NLF_test1.llsp";
-            //@"c:\Users\attil\Documents\LEGO Education SPIKE\aprilis28.llsp";
-            //@"c:\Users\attil\Documents\LEGO Education SPIKE\CSAL3F WRO.llsp";
-            //@"e:\FirstLegoLeague\z_Fixing\TertschAgi\DO_NOT_TOUCH_MaGaBen.llsp";
-            //@"c:\Users\attil\Documents\LEGO Education SPIKE\iconblocks_test2.llsp";
-            //@"c:\Users\attil\Documents\LEGO Education SPIKE\essential_testicon.llsp";
-            //@"e:\FirstLegoLeague\2022_WRO_Jovobelatok\programs\WRO22_Luna_2.lms";
-            @"e:\FirstLegoLeague\z_Fixing\Ravi\BLACK-1a-1.lmsp";
-            using (Stream stream = File.OpenRead(file))
+            if(args.Length != 1)
             {
-                try
-                {
+                Console.WriteLine("usage: cliapp <lego-project-file>");
+                return;
+            }
+            using (Stream stream = File.OpenRead(args[0]))
+            {
+                //try
+                //{
                     //SB3NodesPrinter.PrintProgram(target_blocks.Value<JObject>());
 
                     //(var stream_out, var name_out) = LegoAppToolsLib.LegoAppTools.RepairFile(stream, file, true);
                     //var result = LegoAppToolsLib.LegoAppTools.GeneratePngCanvas(stream, file);
 
-                    stream.Position = 0;
+                    //stream.Position = 0;
                     (LegoAppCodeListing code, LegoAppStatsList stats) = LegoAppTools.GetFileContents(stream);
                     Console.WriteLine(string.Join("\r\n", code.ToArray()));
                     Console.WriteLine(string.Join("\r\n", stats.Select(kvp => $"{kvp.Key} = {kvp.Value}").ToArray()));
@@ -60,11 +51,11 @@ namespace CLIApp
                     //System.Diagnostics.Process p = new System.Diagnostics.Process();
                     //p.StartInfo = info;
                     //p.Start();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                //}
+                //catch (Exception ex)
+                //{
+                //    Console.WriteLine(ex.Message);
+                //}
             }
         }
     }
