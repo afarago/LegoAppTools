@@ -110,7 +110,7 @@ namespace LegoAppToolsLib
                                             block_inputs[input.Key] = valuesvalues[1].ToString();
                                         }
                                     }
-                                    else if (values[1] is JValue && values[1].Value<string>().Length == 20)
+                                    else if (values[1] is JValue && values[1].Value<string>() != null && values[1].Value<string>().Length == 20)
                                     {
                                         //-- node reference like "nwqMZhP}|kyhXrODU#NZ"
 
@@ -395,7 +395,7 @@ namespace LegoAppToolsLib
                                 input_values[input.Key] = new InputValue(value, valuetype.ToString());
                             }
                         }
-                        else if (values[1] is JValue && values[1].Value<string>().Length == 20)
+                        else if (values[1] is JValue && values[1].Value<string>() != null && values[1].Value<string>().Length == 20)
                         {
                             //-- shadow reference
                             string noderefid = values[1].Value<string>();
