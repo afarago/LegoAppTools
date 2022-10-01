@@ -196,11 +196,103 @@ namespace LegoAppToolsLib
                 retval["type"] = manifest.GetValue("type")?.ToString();
                 retval["created"] = manifest.GetValue("created")?.ToString();
                 retval["last saved"] = manifest.GetValue("lastsaved")?.ToString();
+
+
+                var mlearning = manifest.GetValue("machineLearning") as JObject;
+                if (mlearning != null)
+                {
+                    var mlearning_cnt = (mlearning.GetValue("models") as JArray)?.Count;
+                    //if (mlearning_cnt > 0) retval["machine learning"] = $"{mlearning_cnt} models";
+
+                    var activemodel_id = mlearning.GetValue("activeModelId").ToString();
+                    var act_model = (mlearning.GetValue("models") as JArray)?.FirstOrDefault(elem => elem["id"].ToString() == activemodel_id);
+                    var act_model_type = act_model["type"]?.ToString();
+                    var act_model_classes = act_model["classes"] as JArray;
+                    var act_model_classes_names = string.Join(", ", act_model_classes.Select(elem => $"'{elem["name"]}'"));
+
+                    retval["machinelearning"] = $"{act_model_type} type with {act_model_classes_names} classes";
+                }
             }
             catch { }
 
             return (retval, errors);
         }
+
+        public class MLImageItemResult
+        {
+            public string Filename { get; set; }
+            public Stream Stream { get; set; }
+            public long Size { get; set; }
+        }
+
+        static public Dictionary<string, List<MLImageItemResult>> GetFileMachineLearningImages(Stream stream)
+        {
+            //IDEA: move to SB3?, is it SB3 specific? probably not
+
+            using ZipFile zip1 = _GetLegoFile(stream, out JObject manifest, out string program_type);
+
+            var mlearning = manifest.GetValue("machineLearning") as JObject;
+            if (mlearning == null) throw new LegoAppToolException("#MISML Invalid LEGO content file");
+
+            var mlearning_cnt = (mlearning.GetValue("models") as JArray)?.Count;
+            //if (mlearning_cnt > 0) retval["machine learning"] = $"{mlearning_cnt} models";
+
+            var activemodel_id = mlearning.GetValue("activeModelId").ToString();
+            var act_model = (mlearning.GetValue("models") as JArray)?.FirstOrDefault(elem => elem["id"].ToString() == activemodel_id);
+            var act_model_id = act_model["id"].ToString();
+            var act_model_type = act_model["type"]?.ToString();
+            var act_model_classes = act_model["classes"] as JArray;
+            var act_model_classes_names = string.Join(", ", act_model_classes.Select(elem => $"'{elem["name"]}'"));
+
+            //-- get <class>.samples.zip
+            var zip2name = act_model_id + ".samples.zip";
+            var zip2entry = zip1.GetEntry(zip2name);
+            if (zip2entry == null) throw new LegoAppToolException("#MISMLZIP Invalid LEGO content file");
+
+            //-- copy to memory stream to provide a seekable stream for ZIP2
+            /*using*/
+            MemoryStream stream2 = new MemoryStream();
+            zip1.GetInputStream(zip2entry).CopyTo(stream2);
+            /*using*/
+            ZipFile zip2 = new ZipFile(stream2);
+            ZipEntry ze2 = zip2.GetEntry("samples.json");
+            if (ze2 == null) throw new LegoAppToolException("#ERRMISSAMPLES Invalid LEGO content file");
+
+            using (StreamReader reader = new StreamReader(zip2.GetInputStream(ze2)))
+            using (JsonTextReader jsonReader = new JsonTextReader(reader))
+            {
+                JsonSerializer ser = new JsonSerializer();
+                var samplesjson = ser.Deserialize<JObject>(jsonReader);
+
+                var retval = act_model_classes.ToDictionary(
+                    aclass => aclass["name"].ToString(),
+                    aclass =>
+                    {
+                        var aclassid = aclass["id"].ToString();
+
+                        var aclassarr = samplesjson[aclassid];
+                        //Console.WriteLine(aclassname);
+                        var aclassimages = aclassarr
+                            .Select(elem =>
+                            {
+                                var imageid = elem["id"].ToString();
+                                var sampleimage_filename = imageid + ".png";
+                                var sampleimage_entry = zip2.GetEntry(sampleimage_filename);
+                                var sampleimage_stream = zip2.GetInputStream(sampleimage_entry);
+
+                                Console.WriteLine(sampleimage_filename);
+                                Console.WriteLine(sampleimage_entry.Size);
+
+                                return new MLImageItemResult() { Filename = sampleimage_filename, Stream = sampleimage_stream, Size = sampleimage_entry.Size };
+                            }).ToList();
+
+                        return aclassimages;
+                    });
+
+                return retval;
+            }
+        }
+
 
 
         /// <summary>

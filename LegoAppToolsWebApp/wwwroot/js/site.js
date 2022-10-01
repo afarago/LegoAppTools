@@ -11,6 +11,11 @@ function setSelectedTabByTabTarget(target) {
         $(".tab-pane.active").hasClass("_cansubmit") &&
         $("#file").get(0).files.length > 0;
     $("#submitBtn").toggleClass("d-none", !is_submit_allowed);
+
+    //-- trigger ml preview if needed
+    if (tid == "machinelearning") {
+        updateMLPreview();
+    }
 }
 $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (event) {
     //-- on tab activation update hidden form field for server processing
@@ -23,15 +28,29 @@ $(function () {
     //setSelectedTabByTabTarget(target);
 
     $("#file:file").on('change', function (files) {
-        updateSVGPreview();
+        fileChanged();
     });
+
+    //-- ONLY FOR TESTING
+    //updateSVGPreview();
+
 })
+
+function fileChanged() {
+    is_mlpreview_uptodate = false;
+    is_preview_uptodate = false;
+
+    updateSVGPreview();
+}
 
 function spinnerShow(show) {
     $('#spinner').toggleClass('d-none', { 'duration': 1000, display: show });
 }
 
+let is_preview_uptodate = false;
 function updateSVGPreview() {
+    if (is_preview_uptodate) return;
+
     const $form = $("form");
     let data1 = new FormData($form.get(0));
     //const selectedtab = data1.get('selectedtab');
@@ -74,6 +93,47 @@ function updateSVGPreview() {
             $('#svg_program_use').attr('href', sloturl).attr('xlink:href', sloturl);
         },
         complete: function () {
+            is_preview_uptodate = true;
+            spinnerShow(false);
+        }
+    });
+}
+
+let is_mlpreview_uptodate = false;
+function updateMLPreview() {
+    if (is_mlpreview_uptodate) return;
+
+    const $form = $("form");
+    let data1 = new FormData($form.get(0));
+
+    //-- overrde selected tab for posing ajax preview mode
+    data1.set('selectedtab', 'machinelearning_preview');
+
+    spinnerShow(true);
+    let ajaxRequest = $.getJSON({
+        type: "POST",
+        url: $form.attr("action"),
+        contentType: false,
+        processData: false,
+        data: data1,
+        dataType: "json",
+        success: function (response, textStatus, jqXHR) {
+            //console.log(response);
+            //const content = new XMLSerializer().serializeToString(response);
+            const content = response;
+            let $mlroot = $('#preview_ml'); $mlroot.html();
+            //console.log(content);
+            $.each(content, (key, item) => {
+                let $item = $mlroot.append("<div>" + key + "</div>");
+                console.log(item);
+                $.each(item, (ikey, iitem) => {
+                    $item.append('<img src="data:image/png;base64,' + iitem.image + '">');
+                });
+            })
+            //$mlroot.html(JSON.stringify(content));
+        },
+        complete: function () {
+            is_mlpreview_uptodate = true;
             spinnerShow(false);
         }
     });
@@ -106,6 +166,6 @@ function OnDrop(e) {
     if (!selectedFiles || !selectedFiles.length) return; //-- prevent drop trigger on empty files
 
     $("#file").get(0).files = selectedFiles;
-    updateSVGPreview();
+    fileChanged();
 }
 
