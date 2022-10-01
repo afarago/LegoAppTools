@@ -1,4 +1,4 @@
-﻿#define TESTING
+﻿//#define TESTING
 
 using LegoAppToolsLib;
 using Microsoft.AspNetCore.Hosting;
