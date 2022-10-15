@@ -370,11 +370,12 @@ namespace LegoAppToolsLib
                             if (input_name == SB3_SUBSTACK2 && opcode == OPCODE_CONTROLIFELSE) retval.Add("else:");
                             else retval.Add(input_name);
                         }
-                        isownerblock = true;
-                        IEnumerable<string> substack = GetStackContents(refnode, false);
-                        foreach (string line2 in substack)
-                            retval.Add(INDENT_PREFIX + line2);
-
+                        if (refnode != null) {
+                            isownerblock = true;
+                            IEnumerable<string> substack = GetStackContents(refnode, false);
+                            foreach (string line2 in substack)
+                                retval.Add(INDENT_PREFIX + line2);
+                        }
                         continue;
                     }
 
